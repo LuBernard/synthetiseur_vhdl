@@ -1,15 +1,11 @@
-#include "../lib/Node.h"
-#include "../lib/Mot.h"
-#include "../lib/Entity.h"
-#include <stdio.h>
-#include <iostream.h>
-#include <list.h>
+#include "../lib/lecture_fichier.h"
+using namespace std;
 
 int main(void)
-{
-	printf("hello world");
-	
-		
-	
+{	
+
+	list<string> l;
+	string chemin = "../../vhdl/test_line.txt";
+	l = lecture_fichier(chemin);
 	return 0;
 }
