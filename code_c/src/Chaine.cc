@@ -7,32 +7,43 @@ using namespace std;
 
 
 void Separateur_commentaire(){
-	string chaine[] = " Je suis une phrase j'aimerai bien etre decoupe -- coucou"; 
-	int i; 
-	for (i=0; chaine[i]<j;i++)
-	{
-		if(chaine[i]=='-'&& chaine[i+1]=='-')
+int i; 
+int j;
+string chaine = "hello bel homme -- coucou";
+//list<string>::iterator iterrator_of_my_list = l.begin();
+string sentence;
+//for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
+	//{
+		for (i=0; i<chaine.size();i++)
 		{
-			chaine.substr(0,i);
-			j = chaine.size(i)
+			if((chaine[i]=='-' ) && (chaine[i+1]=='-'))
+			{
+				sentence = chaine.substr(0,i);
+				i = chaine.size();
+			}
+			printf("%c",chaine[i]);
 		}
-	}	
-
+	//}	
+	//return l;
 }
 
 
 
 
 void Separateur_espace(){
-
-	char chaine[]="Je suis une phrase j'aimerai bien etre decoupe -- coucou";
 int i;
-	for(i=0;chaine[i]!='\0';i++)
-	{
-   	 	if(chaine[i]!=' ')
-    		{
-         		printf("%c",chaine[i]);
-     		}
-    		 else printf("\n");
-	}
+string chaine = "hello bel homme -- coucou";
+//list<string>::iterator iterrator_of_my_list = l.begin();
+	//for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
+	//{
+		for(i=0;chaine[i]!='\0';i++)
+		{
+   			if(chaine[i]!=' ')
+    			{
+         			printf("%c",chaine[i]);
+     			}
+    		 	else printf("\n");
+		}
+	//}
+	//return l;
 }
