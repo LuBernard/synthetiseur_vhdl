@@ -10,7 +10,7 @@ list<string> lecture_fichier(string nom)
  
         if(fichier)  // si l'ouverture a fonctionné
         {
-		printf("je suis rentre dans le fichier\n");
+		cout << "je suis rentre dans le fichier" <<endl;
                 string contenu;  // déclaration d'une chaîne qui contiendra la ligne lue
 
 		while(getline(fichier, contenu))  // tant que l'on peut mettre la ligne dans "contenu"
@@ -22,8 +22,8 @@ list<string> lecture_fichier(string nom)
 
 	       	}
 		fichier.close();
-	printf("%i",my_list.size());
-	printf("\n");
+	cout<<my_list.size()<<endl;
+
 	for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
 	{
 		//printf("je suis rentre dans le while\n");
