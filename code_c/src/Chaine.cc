@@ -7,9 +7,7 @@ using namespace std;
 
 
 list<string> Separateur_commentaire(list<string> my_list){
-int i; 
-//int j;
-//string chaine = "hello bel homme -- coucou";
+int i = 0; 
 list<string>::iterator iterrator_of_my_list = my_list.begin();
 list <string> list_inter; 
 string sentence;
@@ -23,7 +21,6 @@ for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end
 				sentence = sentence.substr(0,i);
 				i = sentence.size();
 			}
-			//cout<<sentence<<endl;
 		}
 	list_inter.push_back(sentence);
 	}	
@@ -33,20 +30,101 @@ for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end
 
 
 
-void Separateur_espace(){
-int i;
-string chaine = "hello bel homme -- coucou";
-//list<string>::iterator iterrator_of_my_list = l.begin();
-	//for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
-	//{
-		for(i=0;chaine[i]!='\0';i++)
+list<string> Separateur_espace(list<string> my_list){
+int i = 0;
+int j = 0;
+list<string>::iterator iterrator_of_my_list = my_list.begin();
+list <string> list_inter;
+string sentence;
+string sentenceInter;
+
+for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
+	{ 
+	sentence = *iterrator_of_my_list;
+	j = 0;
+		for (i=0; i<sentence.size();i++)
 		{
-   			if(chaine[i]!=' ')
+   			if(sentence[i]==' ')
     			{
-         			printf("%c",chaine[i]);
+				sentenceInter = sentence.substr(j,i+1-j);
+				list_inter.push_back(sentenceInter);
+				j = i+1;
+	
      			}
-    		 	else printf("\n");
-		}
-	//}
-	//return l;
+			else if(sentence[i]!=' ' && i==sentence.size()-1)
+			{
+				sentenceInter = sentence.substr(j,i);
+				list_inter.push_back(sentenceInter);
+				
+			}
+		}	
+	
+	}
+	return list_inter;
 }
+
+
+
+
+/*list<string> Separateur_tabulation(list<string> my_list){
+int i = 0;
+list<string>::iterator iterrator_of_my_list = my_list.begin();
+list <string> list_inter;
+string sentence;
+
+for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
+	{ 
+	sentence = *iterrator_of_my_list;
+		for (i=0; i<sentence.size();i++)
+		{	
+			if(sentence[i]== '	' )
+			{
+				sentence.erase(0,i);
+				i--; 
+			*iterrator_of_my_list = sentence; 
+			}
+		}cout <<"Verif:"<<sentence<<endl;
+	
+	}
+	return my_list;
+}*/
+list<string> Separateur_tabulation(list<string> my_list){
+int i = 0;
+int j = 0;
+list<string>::iterator iterrator_of_my_list = my_list.begin();
+list <string> list_inter;
+string sentence;
+string sentenceInter;
+
+for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
+	{ 
+	sentence = *iterrator_of_my_list;
+	j = 0;
+		for (i=0; i<sentence.size();i++)
+		{
+   			if(sentence[i]== 9)
+    			{
+				sentenceInter = sentence.substr(j,i);
+				//list_inter.push_back(sentenceInter);
+				j = i+1;
+	
+     			}
+			if(sentence[i]!= 9 && i==sentence.size()-1)
+			{
+				sentenceInter = sentence.substr(j,i);
+				list_inter.push_back(sentenceInter);
+				
+			}
+		}	
+	
+	}
+	return list_inter;
+}
+
+
+
+
+
+
+
+

@@ -6,4 +6,5 @@ using namespace std;
 
 
 list<string> Separateur_commentaire(list<string>);
-void Separateur_espace();
+list<string> Separateur_espace(list<string>);
+list<string> Separateur_tabulation(list<string>);

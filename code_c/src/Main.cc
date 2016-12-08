@@ -12,8 +12,11 @@ int main(void)
 {
 	list<string> l;
 	list<string> linter;
+	list<string> linter1;
 	list<string> lfinal;
 	list<string>::iterator iterrator_of_linter = linter.begin();
+	list<string>::iterator iterrator_of_linter1 = linter1.begin();
+	list<string>::iterator iterrator_of_lfinal = lfinal.begin();
 	string chemin = "../../vhdl/test_line.txt";
 	l = lecture_fichier(chemin);
 
@@ -25,9 +28,19 @@ int main(void)
 		cout << *iterrator_of_linter <<endl;
 	}
 
-	//Separateur_espace();
+	linter1 = Separateur_tabulation(linter);
 	
-		
+	/*for(iterrator_of_linter1 = linter1.begin() ; iterrator_of_linter1 != linter1.end() ; ++iterrator_of_linter1)
+	{
+		cout << *iterrator_of_linter1 <<endl;
+	}*/
+
+	lfinal = Separateur_espace(linter1);
+	
+	for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
+	{
+		cout << *iterrator_of_lfinal <<endl;
+	}	
 	
 
 
