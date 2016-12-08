@@ -8,7 +8,7 @@ using namespace std;
 
 list<string> Separateur_commentaire(list<string> my_list){
 int i; 
-int j;
+//int j;
 //string chaine = "hello bel homme -- coucou";
 list<string>::iterator iterrator_of_my_list = my_list.begin();
 list <string> list_inter; 
@@ -23,7 +23,7 @@ for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end
 				sentence = sentence.substr(0,i);
 				i = sentence.size();
 			}
-			cout<<sentence<<endl;
+			//cout<<sentence<<endl;
 		}
 	list_inter.push_back(sentence);
 	}	
