@@ -6,25 +6,28 @@ using namespace std;
 
 
 
-void Separateur_commentaire(){
+list<string> Separateur_commentaire(list<string> my_list){
 int i; 
 int j;
-string chaine = "hello bel homme -- coucou";
-//list<string>::iterator iterrator_of_my_list = l.begin();
+//string chaine = "hello bel homme -- coucou";
+list<string>::iterator iterrator_of_my_list = my_list.begin();
+list <string> list_inter; 
 string sentence;
-//for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
-	//{
-		for (i=0; i<chaine.size();i++)
+for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end() ; ++iterrator_of_my_list)
+	{
+	sentence = *iterrator_of_my_list;
+		for (i=0; i<sentence.size();i++)
 		{
-			if((chaine[i]=='-' ) && (chaine[i+1]=='-'))
+			if((sentence[i]=='-' ) && (sentence[i+1]=='-'))
 			{
-				sentence = chaine.substr(0,i);
-				i = chaine.size();
+				sentence = sentence.substr(0,i);
+				i = sentence.size();
 			}
-			printf("%c",chaine[i]);
+			cout<<sentence<<endl;
 		}
-	//}	
-	//return l;
+	list_inter.push_back(sentence);
+	}	
+	return list_inter;
 }
 
 

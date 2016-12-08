@@ -4,5 +4,6 @@
 #include <list>
 using namespace std;
 
+
+list<string> Separateur_commentaire(list<string>);
 void Separateur_espace();
-void Separateur_commentaire();

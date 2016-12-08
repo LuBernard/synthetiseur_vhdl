@@ -16,8 +16,9 @@ int main(void)
 	string chemin = "../../vhdl/test_line.txt";
 	l = lecture_fichier(chemin);
 
+	linter = Separateur_commentaire(l);
 	Separateur_espace();
-	Separateur_commentaire();
+	
 		
 	
 
