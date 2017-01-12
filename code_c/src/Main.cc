@@ -21,26 +21,32 @@ int main(void)
 	l = lecture_fichier(chemin);
 
 
-	linter = Separateur_commentaire(l);
+	linter = Minuscule(l);
 	
 	for(iterrator_of_linter = linter.begin() ; iterrator_of_linter != linter.end() ; ++iterrator_of_linter)
 	{
 		cout << *iterrator_of_linter <<endl;
 	}
+	/*linter1 = Minuscule(linter);
+	
+	for(iterrator_of_linter1 = linter1.begin() ; iterrator_of_linter1 != linter1.end() ; ++iterrator_of_linter1)
+	{
+		cout << *iterrator_of_linter1 <<endl;
+	}*/
 
-	linter1 = Separateur_tabulation(linter);
+	//linter1 = Separateur_tabulation(linter);
 	
 	/*for(iterrator_of_linter1 = linter1.begin() ; iterrator_of_linter1 != linter1.end() ; ++iterrator_of_linter1)
 	{
 		cout << *iterrator_of_linter1 <<endl;
 	}*/
 
-	lfinal = Separateur_espace(linter1);
+	/*lfinal = Minuscule(linter);
 	
 	for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
 	{
 		cout << *iterrator_of_lfinal <<endl;
-	}	
+	}*/	
 	
 
 

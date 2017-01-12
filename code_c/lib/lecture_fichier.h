@@ -10,6 +10,8 @@
 using namespace std;
 
 list<string> lecture_fichier(string nom);
+list<string> lecture_mots_clefs(string nom);
+list<string> lecture_mots_operateurs(string nom);
  
 #endif 
 
