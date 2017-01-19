@@ -56,12 +56,9 @@ int main(void)
 	for (int i = 0; i <30;i++)
 	{
 		linter = Separateur(linter, a[i]);
-	}	
-	lfinal = SuppLignesVides(linter);
-	/*for(iterrator_of_linter = linter.begin() ; iterrator_of_linter != linter.end() ; ++iterrator_of_linter)
-	{
-		cout << *iterrator_of_linter <<endl;
-	}*/
+	}
+	linter1 = Minuscule(linter);	
+	lfinal = SuppLignesVides(linter1);
 
 	
 	for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
