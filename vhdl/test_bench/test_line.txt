@@ -2,10 +2,10 @@
 		BEGIN
   --hello moto
 	IF clk'EVENT AND clk = '1' THEN  --hello moto
- IF s_compt_sortie >= 23 THEN
+ IF      s_compt_sortie >= 23 THEN
 s_compt_sortie <= "00000"; 
   	ELSE
-	s_compt_sortie <= s_compt_sortie + 1;
+	s_compt_sortie  <= s_compt_sortie + 1;"'(-
   END IF;
 END IF;
 	END PROCESS;

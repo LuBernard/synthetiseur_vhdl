@@ -53,27 +53,21 @@ int main(void)
 	a[30]=126;
 
 	linter = Separateur_commentaire(l);
-	
+	for (int i = 0; i <30;i++)
+	{
+		linter = Separateur(linter, a[i]);
+	}	
+	lfinal = SuppLignesVides(linter);
 	/*for(iterrator_of_linter = linter.begin() ; iterrator_of_linter != linter.end() ; ++iterrator_of_linter)
 	{
 		cout << *iterrator_of_linter <<endl;
 	}*/
 
-	for (int i=0; i<31; i++)
-	{
-		linter = Separateur(linter, a[i]);
-	}
-	for(iterrator_of_linter = linter.begin() ; iterrator_of_linter != linter.end() ; ++iterrator_of_linter)
-	{
-		cout << *iterrator_of_linter <<endl;
-	}
-
-	//lfinal = Separateur_tabulation(linter1);
 	
-	/*for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
+	for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
 	{
 		cout << *iterrator_of_lfinal <<endl;
-	}*/
+	}
 	
 
 

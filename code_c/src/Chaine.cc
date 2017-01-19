@@ -193,36 +193,70 @@ for(iterrator_of_my_list = my_list.begin() ; iterrator_of_my_list != my_list.end
 
 		for (i=0; i<sentence.size();i++)
 		{
-   			if(sentence[i]==a)
+   			if(sentence[i]==a && i ==j)
     			{
-				//cout<<"coucou"<<endl;
-				sentenceInter = sentence.substr(j,i-j);
+				sentenceInter = sentence[i];
 				list_inter.push_back(sentenceInter);
 				j = i+1;
 	
      			}
-			else if(sentence[i]!=a && i==sentence.size()-1 && j==0)
+			else if(sentence[i]==a && i!=j)
 			{
-				sentenceInter = sentence.substr(j,i+1);
+				sentenceInter = sentence.substr(j,i-j);
 				list_inter.push_back(sentenceInter);
-				
+				sentenceInter = sentence[i];
+				list_inter.push_back(sentenceInter);
+				j=i+1;		
 			}
-			else if(sentence[i]!=a && i==sentence.size()-1)
+			else if (sentence.find(a,0)==string::npos)
 			{
-				sentenceInter = sentence.substr(j,i+1);
+				list_inter.push_back(sentence);
+				i = sentence.size()-1;
+			}
+			else if (sentence[i]!=a && i == sentence.size()-1)
+			{
+				sentenceInter = sentence.substr(j,i-j+1);
 				list_inter.push_back(sentenceInter);
-				
 			}
 
 		}	
 	
 	}
+/*list<string>::iterator iterrator_of_list_inter = list_inter.begin();
+
+for(iterrator_of_list_inter = list_inter.begin() ; iterrator_of_list_inter != list_inter.end() ; ++iterrator_of_list_inter)
+	{
+	sentenceInter = *iterrator_of_list_inter;
+		if (sentenceInter[0] != 9 && sentenceInter[0] != 32 && sentenceInter[0] != 0)
+		{
+			cout<<sentenceInter<<endl;
+			list_inter2.push_back(*iterrator_of_list_inter);
+		}
+	}*/
+return list_inter;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+list<string> SuppLignesVides(list<string> list_inter){
+int i = 0;
+int j = 0;
+list <string> list_inter2;
+string sentence;
+string sentenceInter;
+
+//cout<<a<<endl;
+
+
 list<string>::iterator iterrator_of_list_inter = list_inter.begin();
 
 for(iterrator_of_list_inter = list_inter.begin() ; iterrator_of_list_inter != list_inter.end() ; ++iterrator_of_list_inter)
 	{
 	sentenceInter = *iterrator_of_list_inter;
-		if (sentenceInter[0] != a && sentenceInter[0] != 0)
+		if (sentenceInter[0] != 9 && sentenceInter[0] != 32 && sentenceInter[0] != 0)
 		{
 			//cout<<sentenceInter<<endl;
 			list_inter2.push_back(*iterrator_of_list_inter);
@@ -230,7 +264,4 @@ for(iterrator_of_list_inter = list_inter.begin() ; iterrator_of_list_inter != li
 	}
 return list_inter2;
 }
-
-
-
 
