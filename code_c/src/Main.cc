@@ -59,7 +59,8 @@ int main(void)
 	}
 	linter1 = Minuscule(linter);	
 	lfinal = SuppLignesVides(linter1);
-
+	
+	
 	
 	for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
 	{

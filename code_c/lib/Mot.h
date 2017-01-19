@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
-#include "Entity.h"
+#include <list>
+#include <cstdlib>
 using namespace std;
 
 
-#ifndef _ENTITY_H_
-#define _ENTITY_H_
+#ifndef _MOT_H_
+#define _MOT_H_
 
 class Mot 
 {
@@ -30,9 +31,13 @@ public:
 	void setCarac(string caracteristique){this->caracteristique = caracteristique;}
 	void setPlace(int place){this->place = place;}
 
-	string getLexeme{return lexeme;}
-	string getCarac{return caracteristique;}
-	string getPlace{return place;}
+	string getLexeme(){return lexeme;}
+	string getCarac(){return caracteristique;}
+	int getPlace(){return place;}
+
+	//Fonctions
+	list<Mot> transfoStringMot(list<string>);
+	void erreurOrthographe(list<Mot>);
 
 private:
 	// Fonctions internes
