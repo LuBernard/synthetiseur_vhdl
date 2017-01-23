@@ -2,6 +2,8 @@
 #include "string"
 #include "stdio.h"
 #include "../lib/Chaine.h"
+#include "../lib/Mot.h"
+#include "../lib/lecture_fichier.h"
 using namespace std;
 
 
@@ -135,3 +137,100 @@ list<string> Minuscule(list<string> my_list){
 	}	
 	return list_inter;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////Fonctions de la classe Mot/////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+list<Mot> transfoStringMot(list<string> my_list)
+{	list<Mot> listMot;
+	list<string>::iterator iterrator_of_my_list = my_list.begin();
+	
+	string contenu;
+	int i = 0;
+
+	for(iterrator_of_my_list = my_list.begin(); iterrator_of_my_list != my_list.end(); iterrator_of_my_list ++)
+	{
+	i ++;
+	ifstream fichier("../../vhdl/test_bench/Mots_clefs.txt");
+		/*if ( file ) 
+		{ 
+			int lines = std::count( 
+		 	std::istreambuf_iterator<char>( file ), 
+		 	std::istreambuf_iterator<char>(), 
+		 	'\n' ); 
+		} */
+		if (fichier)
+		{
+			string sentence = *iterrator_of_my_list;
+			if (sentence.size() == 1) 
+			{
+				if (sentence[0] <97 || sentence[0]>122)
+				{
+					
+					if (sentence [0]>48 && sentence[0]<57)
+					{
+						listMot.push_back(Mot(sentence, "etiquette", i));
+					}
+					else
+					{
+						listMot.push_back(Mot(sentence, "separateur", i));
+					}
+				}
+			}
+			else
+			{
+				int j = 0;
+				while(getline(fichier, contenu))  // tant que l'on peut mettre la ligne dans "contenu"
+				{
+
+					if (sentence==contenu)
+					{
+						listMot.push_back(Mot(sentence, "mot clef",i));
+						j = 1;
+					}
+					else if (sentence != contenu && contenu == "xox" && j==0)//dernier mot du fichier Mots_clefs.txt, dans notre cas xox
+					{
+						listMot.push_back(Mot(sentence, "etiquette",i));
+					}
+				}
+			}
+		}
+	fichier.close();
+	}
+	return listMot;
+}
+
+
+void erreurOrthographe(list<Mot> my_list)
+{
+
+	list<Mot>::iterator iterrator_of_my_list = my_list.begin();
+	string sentence = (*iterrator_of_my_list).getLexeme();
+
+	for(iterrator_of_my_list = my_list.begin(); iterrator_of_my_list != my_list.end(); iterrator_of_my_list ++)
+	{
+		sentence = (*iterrator_of_my_list).getLexeme();
+		
+		//verification qu'on ne commence pas par un _
+		if (sentence[0] == 95)
+		{
+			cout<<"erreur, le lexeme a la position : "<< (*iterrator_of_my_list).getPlace() <<"commence par un _"<<endl;
+			exit(1);
+		}
+
+		for (int i =0; i<sentence.size()-1;i++)
+		{
+			//test si on a un @, un $ ou un  dans le code
+			if(sentence[i] == 64 || sentence[i] == 36 || sentence[i] > 127 )
+			{
+				cout<<"erreur, le lexeme a la position : "<< (*iterrator_of_my_list).getPlace() <<"contient un :"<< sentence[i]<<endl;
+				exit(1);
+			}
+		}
+	}
+}
+
+

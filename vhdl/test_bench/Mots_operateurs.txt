@@ -28,5 +28,3 @@ nand
 nor
 xor
 xnor
-
-

@@ -36,8 +36,8 @@ public:
 	int getPlace(){return place;}
 
 	//Fonctions
-	list<Mot> transfoStringMot(list<string>);
-	void erreurOrthographe(list<Mot>);
+	//list<Mot> transfoStringMot(list<string>);
+	//void erreurOrthographe(list<Mot>);
 
 private:
 	// Fonctions internes

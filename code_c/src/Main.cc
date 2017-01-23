@@ -14,9 +14,11 @@ int main(void)
 	list<string> linter;
 	list<string> linter1;
 	list<string> lfinal;
+	list<Mot> lMot;
 	list<string>::iterator iterrator_of_linter = linter.begin();
 	list<string>::iterator iterrator_of_linter1 = linter1.begin();
 	list<string>::iterator iterrator_of_lfinal = lfinal.begin();
+	list<Mot>::iterator iterrator_of_lMot = lMot.begin();
 	string chemin = "../../vhdl/test_line.txt";
 	l = lecture_fichier(chemin);
 	char a[31];
@@ -66,7 +68,11 @@ int main(void)
 	{
 		cout << *iterrator_of_lfinal <<endl;
 	}
+
+	lMot = transfoStringMot(lfinal);
 	
-
-
+	for(iterrator_of_lMot = lMot.begin() ; iterrator_of_lMot != lMot.end() ; ++iterrator_of_lMot)
+	{
+		cout << (*iterrator_of_lMot).getLexeme() << " "<<(*iterrator_of_lMot).getCarac()<<" "<<(*iterrator_of_lMot).getPlace() <<endl;
+	}
 }
