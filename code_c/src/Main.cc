@@ -1,8 +1,9 @@
 #include "../lib/Node.h"
 #include "../lib/Mot.h"
-#include "../lib/Entity.h"
+#include "../lib/VerifSyntaxique.h"
 #include "../lib/Chaine.h"
 #include "../lib/lecture_fichier.h"
+
 #include <stdio.h>
 #include <iostream>
 #include <list>
@@ -79,4 +80,7 @@ int main(void)
 	}
 
 	erreurOrthographe(lMot);
+
+	int placeFinEntity = TestEntity(lMot);
+	cout << placeFinEntity << endl;
 }
