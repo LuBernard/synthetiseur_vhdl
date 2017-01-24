@@ -64,15 +64,19 @@ int main(void)
 	
 	
 	
-	for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
+	/*for(iterrator_of_lfinal = lfinal.begin() ; iterrator_of_lfinal != lfinal.end() ; ++iterrator_of_lfinal)
 	{
 		cout << *iterrator_of_lfinal <<endl;
-	}
+	}*/
+	
 
 	lMot = transfoStringMot(lfinal);
+	
 	
 	for(iterrator_of_lMot = lMot.begin() ; iterrator_of_lMot != lMot.end() ; ++iterrator_of_lMot)
 	{
 		cout << (*iterrator_of_lMot).getLexeme() << " "<<(*iterrator_of_lMot).getCarac()<<" "<<(*iterrator_of_lMot).getPlace() <<endl;
 	}
+
+	erreurOrthographe(lMot);
 }

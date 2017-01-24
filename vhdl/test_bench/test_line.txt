@@ -1,11 +1,3 @@
-    PROCESS (clk) --debut du process
-		BEGIN
-  --hello moto
-	IF clk'EVENT AND clk = '1' THEN  --hello moto
- IF      s_compt_sortie >= 23 THEN
-s_compt_sortie <= "00000"; 
-  	ELSE
-	s_compt_sortie  <= s_compt_sortie + 1;"'(-
-  END IF;
-END IF;
-	END PROCESS;
+ENTITY nom_entity is 
+port();
+end nom_entity;
