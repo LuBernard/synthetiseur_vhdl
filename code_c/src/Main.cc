@@ -3,7 +3,7 @@
 #include "../lib/VerifSyntaxique.h"
 #include "../lib/Chaine.h"
 #include "../lib/lecture_fichier.h"
-
+#include "../lib/Entity.h"
 #include <stdio.h>
 #include <iostream>
 #include <list>
@@ -22,7 +22,9 @@ int main(void)
 	list<Mot>::iterator iterrator_of_lMot = lMot.begin();
 	string chemin = "../../vhdl/test_line.txt";
 	l = lecture_fichier(chemin);
-	char a[31];
+	list<Entity> list_entity;
+	list<Entity>::iterator iterrator_of_list_entity = list_entity.begin();
+	char a[32];
 	a[0]=9;
 	a[1]=32;
 	a[2]=33;
@@ -38,22 +40,23 @@ int main(void)
 	a[12]=43;
 	a[13]=44;
 	a[14]=45;
-	a[15]=47;
-	a[16]=58;
-	a[17]=59;
-	a[18]=60;
-	a[19]=61;
-	a[20]=62;
-	a[21]=63;
-	a[22]=91;
-	a[23]=92;
-	a[24]=93;
-	a[25]=94;
-	a[26]=96;
-	a[27]=123;
-	a[28]=124;
-	a[29]=125;
-	a[30]=126;
+	a[15]=46;
+	a[16]=47;
+	a[17]=58;
+	a[18]=59;
+	a[19]=60;
+	a[20]=61;
+	a[21]=62;
+	a[22]=63;
+	a[23]=91;
+	a[24]=92;
+	a[25]=93;
+	a[26]=94;
+	a[27]=96;
+	a[28]=123;
+	a[29]=124;
+	a[30]=125;
+	a[31]=126;
 
 	linter = Separateur_commentaire(l);
 	for (int i = 0; i <30;i++)
@@ -80,7 +83,9 @@ int main(void)
 	}
 
 	erreurOrthographe(lMot);
-
-	int placeFinEntity = TestEntity(lMot);
-	cout << placeFinEntity << endl;
+	//cout<<list_entity.size()<<endl;
+	list_entity = VerifSyntaxe_Entity(lMot, list_entity);
+	iterrator_of_list_entity = list_entity.begin();
+	cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name() << endl;
+	//cout<<list_entity.size()<<endl;
 }

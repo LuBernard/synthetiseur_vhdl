@@ -2,6 +2,7 @@
 #include <string>
 #include <vector> 
 #include "Node.h"
+#include <list>
 
 using namespace std;
 
@@ -17,17 +18,20 @@ using namespace std;
 class Signal
 {
 public:
-  // Constructeurs/destructeur
-  Signal () { }
-  Signal (std::string name): _name (name) { }
-  ~Signal () { std::cout << "destroying " << _name << std::endl; }
-  void setType(std::string type) { _type = type;}
-  void setDirection(std::string io) { _IO = io;}
+  	// Constructeurs/destructeur
+	Signal () { }
+	Signal (string name, string type, string IO)
+	{
+		name_signal = name;
+		type_signal = type;
+		IO_signal = IO;
+	}
+	~Signal () { cout << "destroying " << name_signal << std::endl; }
  
 private:
-    std::string _name;
-    std::string _type;
-    std::string _IO;
+	string name_signal;
+	string type_signal;
+	string IO_signal;
 };
 
 #endif

@@ -1,3 +1,8 @@
-ENTITY nom_entity is 
-port();
+entity nom_entity is 
+port 
+		(
+	input_1 : IN std_logic;
+	input_2 : IN std_logic;
+	input_3 : OUT std_logic
+	);
 end nom_entity;
