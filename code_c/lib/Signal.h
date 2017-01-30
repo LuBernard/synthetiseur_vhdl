@@ -26,8 +26,10 @@ public:
 		type_signal = type;
 		IO_signal = IO;
 	}
-	~Signal () { cout << "destroying " << name_signal << std::endl; }
- 
+	~Signal () {}
+	void set_name(string name){name_signal = name;}
+	void set_type(string type){type_signal = type;}
+	void set_IO(string IO){IO_signal = IO;}
 private:
 	string name_signal;
 	string type_signal;

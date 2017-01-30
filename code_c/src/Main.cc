@@ -84,8 +84,8 @@ int main(void)
 
 	erreurOrthographe(lMot);
 	//cout<<list_entity.size()<<endl;
-	list_entity = VerifSyntaxe_Entity(lMot, list_entity);
+	/*list_entity = VerifSyntaxe_Entity(lMot, list_entity);
 	iterrator_of_list_entity = list_entity.begin();
-	cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name() << endl;
+	cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name() << endl;*/
 	//cout<<list_entity.size()<<endl;
 }

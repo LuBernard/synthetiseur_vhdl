@@ -31,7 +31,7 @@ using namespace std;
     	sentence = *it;
 	list_entity.push_back(Entity(nom_entity_debut));
 	reverse_itEntity = list_entity.rbegin();
-	cout<<"coucou "<<reverse_itEntity->get_name()<<endl;
+	//cout<<"coucou "<<reverse_itEntity->get_name()<<endl;
     }
     else {
     	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
@@ -54,7 +54,9 @@ using namespace std;
     	exit(1);
     }
     if (sentence.getLexeme() == "("){
-    		iPlace = VerifSyntaxe_Signal(my_list_mot,sentence.getPlace());
+		int a = 0;//variable a enlever quand on aura plusieurs entités
+		iPlace = sentence.getPlace();
+    		iPlace = VerifSyntaxe_Port(my_list_mot,list_entity, a, iPlace);
     		for (int j = sentence.getPlace(); j<iPlace; j++){
 				it++;
 				sentence = *it;
@@ -116,102 +118,127 @@ using namespace std;
     }
  }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- int VerifSyntaxe_Signal(list<Mot> my_list_mot,int iPlace){
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////verif syntaxe port//////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ int VerifSyntaxe_Port(list<Mot> my_list_mot, list<Entity> list_entity, int num_entity, int iPlace){
     
-    list<Mot>::iterator it = my_list_mot.begin(); 
-    Mot sentence;
-    sentence = *it;
-    string nom_signal;
+	list<Entity>::iterator itEn = list_entity.begin();
+	list<Mot>::iterator it = my_list_mot.begin(); 
+	Mot sentence;
+	Signal sig;
+	Entity ent = *itEn;
+	sentence = *it;
+	string nom_signal;
+	num_entity = 1;
+	for (int k = 0; k<num_entity;k++)
+	{
+		itEn++;
+		ent = *itEn;
+	}
+   
     
-    
-    for (int j = sentence.getPlace(); j<iPlace; j++){
+   for (int j = sentence.getPlace();j<iPlace ; j++){
 		it++;
 		sentence = *it;
-	}
-    
-	
+	}	
 	do {
 		it++;
     	sentence = *it;
-	if (sentence.getCarac() == "etiquette"){
-		string nom_signal = sentence.getLexeme(); 
-		it++;
-    	sentence = *it;
-	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
-    	exit(1);   
-    }
-    if (sentence.getLexeme() == ":"){
-		it++;
-    	sentence = *it;
-	}
-	else {
-    	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
-    	exit(1);   
-    }
+		if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			sig.set_name(nom_signal);//ajout de signal
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == ":"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}
 
-    if (sentence.getLexeme() == "in"||sentence.getLexeme() == "out"){
+    	if (sentence.getLexeme() == "in"||sentence.getLexeme() == "out"){
+			it++;
+		sig.set_IO(sentence.getLexeme());
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	if (sentence.getLexeme() == "bit"){
 		it++;
-    	sentence = *it;
+		sig.set_type(sentence.getLexeme());
+    		sentence = *it;
 	}
-	else {
-    	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
-    	exit(1);   
-    }   
-    if (sentence.getLexeme() == "std_logic"){
+	else if (sentence.getLexeme() == "bit_vector"){
 		it++;
-    	sentence = *it;
-	}
-	else {
-    	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
-    	exit(1);   
-    }   
+    		sentence = *it;
+		sig.set_type(sentence.getLexeme());
+		if (sentence.getLexeme() == "("){
+			it++;
+    			sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getLexeme() == "to"){
+				it++;
+    			sentence = *it;
+			}
+    		else if (sentence.getLexeme() == "downto"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+			if (sentence.getLexeme() == ")"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
     
     } 
     while (sentence.getLexeme() == ";");
-    
+    ent.add_signal(sig);
  return sentence.getPlace();
  }
-	
-	
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	
-	
-	
-int VerifSyntaxe_Library(list<Mot> my_list_mot){
-    list<Mot>::iterator it = my_list_mot.begin(); 
-    Mot sentence;
-    sentence = *it;
-    string nom_library;
-    
-	if (sentence.getLexeme() == "library"){
-		it++;
-    	sentence = *it;
-	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
-    	exit(1);   
-    }
-	if (sentence.getCarac() == "etiquette"){
-		string nom_library = sentence.getLexeme(); 
-		it++;
-    	sentence = *it;
-	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
-    	exit(1);   
-    }
-    if (sentence.getLexeme() == ";"){
-    
-	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
-    	exit(1);   
-    }
-	 return sentence.getPlace();
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

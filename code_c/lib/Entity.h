@@ -28,6 +28,7 @@ public:
 	int get_place_fin_entity(){return place_fin_entity;}
 	void set_place_fin_entity(int f_entity){place_fin_entity = f_entity;}
 	string get_name(){return name_entity;}
+	get_signal()
 
 protected:
     	string name_entity;

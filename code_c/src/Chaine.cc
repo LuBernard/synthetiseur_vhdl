@@ -170,7 +170,7 @@ list<Mot> transfoStringMot(list<string> my_list)
 				if (sentence[0] <97 || sentence[0]>122)
 				{
 					
-					if (sentence [0]>48 && sentence[0]<57)
+					if (sentence [0]>47 && sentence[0]<57)
 					{
 						listMot.push_back(Mot(sentence, "etiquette", i));
 					}
@@ -178,6 +178,10 @@ list<Mot> transfoStringMot(list<string> my_list)
 					{
 						listMot.push_back(Mot(sentence, "separateur", i));
 					}
+				}
+				else 
+				{
+					listMot.push_back(Mot(sentence, "etiquette", i));
 				}
 			}
 			else
