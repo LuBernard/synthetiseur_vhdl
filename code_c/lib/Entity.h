@@ -34,7 +34,7 @@ public:
 	string get_name(){return name_entity;}
 
 	void set_numero_entity(int num_entity){numero_entity = num_entity;}
-	string get_numero_entity(){return numero_entity;}
+	int get_numero_entity(){return numero_entity;}
 
 	list<Signal> get_l_signal(){return l_signal;}
 

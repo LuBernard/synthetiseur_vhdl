@@ -19,13 +19,21 @@ class Librairy
 public:
   // Constructeurs/destructeur
   Librairy () { }
-  Librairy (std::string name): _name (name) { }
-  ~Librairy () { std::cout << "destroying " << _name << std::endl; }
+  Librairy (std::string name): name_lib (name) { }
+  ~Librairy () {/* std::cout << "destroying " << _nameLib << std::endl;*/}
+	void addPaquet(string Paquet) { list_paquet.push_back(Paquet);}
+	list<string> get_list_pacquet(){return list_paquet;}
+	
+	void set_pos_end(int end) { pos_end = end;}
+	int get_pos_end() { return pos_end;}
 
-public:
-    string _name;
-	list<Use>  _use;
-
+	void set_name_lib(string name) { name_lib = name;}
+	string get_name_lib() { return name_lib;}
+ 
+private:
+    string name_lib;
+    list<string> list_paquet;
+    int pos_end;
 };
 
 #endif

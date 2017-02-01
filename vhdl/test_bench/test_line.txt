@@ -1,8 +1,18 @@
 entity nom_entity is 
 port 
 		(
-	input_1 : IN std_logic;
-	input_2 : IN std_logic;
-	input_3 : OUT std_logic
+	input_1 : IN bit;
+	input_2 : IN bit;
+	input_3 : OUT bit
 	);
 end nom_entity;
+
+
+entity nom_entity2 is 
+port 
+		(
+	input_4 : IN bit;
+	input_5 : IN bit;
+	input_6 : OUT bit
+	);
+end nom_entity2;

@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
-#include <vector> 
-#include "Node.h"
+#include <list> 
 
+#include "Process.h"
+using namespace std;
 /////////////////////////////////////////////////////////////////////////////
 //
 // Architecture - classe de base pour une Architecture.
@@ -17,13 +18,13 @@ class Architecture
 public:
   // Constructeurs/destructeur
   Architecture () { }
-  Architecture (std::string name): _name (name) { }
-  ~Architecture () { std::cout << "destroying " << _name << std::endl; }
-  void setEntityName(std::string name){ _name_entity = name; }
+  Architecture (string name) {name_architecture = name;}
+  ~Architecture () { }
+  void set_architecture_name(string name){ name_architecture = name; }
 private:
-    std::string _name;
-    std::string _name_entity;
-    std::vector<string> _instructions;
+    string name_architecture;
+    string _name_entity;
+    list<Process> instructions;
 };
 
 #endif

@@ -89,12 +89,16 @@ int main(void)
 	list_entity = VerifSyntaxe_Entity(lMot, list_entity);
 	
 	iterrator_of_list_entity = list_entity.begin();
-	cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name()<<" les signaux sont : " << endl;
 
-	lSignal = (*iterrator_of_list_entity).get_l_signal();
-
-	for (iterrator_of_lSiganl = lSignal.begin() ; iterrator_of_lSiganl != lSignal.end() ; iterrator_of_lSiganl++)
+	for ( iterrator_of_list_entity = list_entity.begin(); iterrator_of_list_entity != list_entity.end();iterrator_of_list_entity++)
 	{
-		cout<<(*iterrator_of_lSiganl).get_name()<< " "<<(*iterrator_of_lSiganl).get_type()<<" "<<(*iterrator_of_lSiganl).get_IO()<<endl;
+		cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name()<<" les signaux sont : " << endl;
+
+		lSignal = (*iterrator_of_list_entity).get_l_signal();
+
+		for (iterrator_of_lSiganl = lSignal.begin() ; iterrator_of_lSiganl != lSignal.end() ; iterrator_of_lSiganl++)
+		{
+			cout<<(*iterrator_of_lSiganl).get_name()<< " "<<(*iterrator_of_lSiganl).get_type()<<" "<<(*iterrator_of_lSiganl).get_IO()<<endl;
+		}
 	}
 }
