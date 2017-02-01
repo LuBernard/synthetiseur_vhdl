@@ -4,6 +4,7 @@
 #include "../lib/Chaine.h"
 #include "../lib/lecture_fichier.h"
 #include "../lib/Entity.h"
+#include "../lib/Signal.h"
 #include <stdio.h>
 #include <iostream>
 #include <list>
@@ -16,10 +17,12 @@ int main(void)
 	list<string> linter1;
 	list<string> lfinal;
 	list<Mot> lMot;
+	list<Signal>lSignal;
 	list<string>::iterator iterrator_of_linter = linter.begin();
 	list<string>::iterator iterrator_of_linter1 = linter1.begin();
 	list<string>::iterator iterrator_of_lfinal = lfinal.begin();
 	list<Mot>::iterator iterrator_of_lMot = lMot.begin();
+	list<Signal>::iterator iterrator_of_lSiganl = lSignal.begin();
 	string chemin = "../../vhdl/test_line.txt";
 	l = lecture_fichier(chemin);
 	list<Entity> list_entity;
@@ -77,15 +80,21 @@ int main(void)
 	lMot = transfoStringMot(lfinal);
 	
 	
-	for(iterrator_of_lMot = lMot.begin() ; iterrator_of_lMot != lMot.end() ; ++iterrator_of_lMot)
+	/*for(iterrator_of_lMot = lMot.begin() ; iterrator_of_lMot != lMot.end() ; ++iterrator_of_lMot)
 	{
 		cout << (*iterrator_of_lMot).getLexeme() << " "<<(*iterrator_of_lMot).getCarac()<<" "<<(*iterrator_of_lMot).getPlace() <<endl;
-	}
-
+	}*/
+	
 	erreurOrthographe(lMot);
-	//cout<<list_entity.size()<<endl;
-	/*list_entity = VerifSyntaxe_Entity(lMot, list_entity);
+	list_entity = VerifSyntaxe_Entity(lMot, list_entity);
+	
 	iterrator_of_list_entity = list_entity.begin();
-	cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name() << endl;*/
-	//cout<<list_entity.size()<<endl;
+	cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name()<<" les signaux sont : " << endl;
+
+	lSignal = (*iterrator_of_list_entity).get_l_signal();
+
+	for (iterrator_of_lSiganl = lSignal.begin() ; iterrator_of_lSiganl != lSignal.end() ; iterrator_of_lSiganl++)
+	{
+		cout<<(*iterrator_of_lSiganl).get_name()<< " "<<(*iterrator_of_lSiganl).get_type()<<" "<<(*iterrator_of_lSiganl).get_IO()<<endl;
+	}
 }

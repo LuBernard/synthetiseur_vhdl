@@ -8,7 +8,7 @@ using namespace std;
  list<Entity> VerifSyntaxe_Entity(list<Mot> my_list_mot, list<Entity> list_entity){
 
 	list<Mot>::iterator it = my_list_mot.begin(); 
-	list<Entity>::iterator itEntity = list_entity.end(); 
+	list<Entity>::iterator itEntity = list_entity.begin(); 
 	list<Entity>::reverse_iterator reverse_itEntity = list_entity.rbegin(); 
 	Mot sentence;
 	sentence = *it;
@@ -56,8 +56,10 @@ using namespace std;
     if (sentence.getLexeme() == "("){
 		int a = 0;//variable a enlever quand on aura plusieurs entités
 		iPlace = sentence.getPlace();
-    		iPlace = VerifSyntaxe_Port(my_list_mot,list_entity, a, iPlace);
-    		for (int j = sentence.getPlace(); j<iPlace; j++){
+		//cout<<"je suis avant la verif de port"<<endl;
+    		list_entity = VerifSyntaxe_Port(my_list_mot,list_entity, a, iPlace);
+
+    		for (int j = sentence.getPlace(); j<(*reverse_itEntity).get_place_fin_signal(); j++){
 				it++;
 				sentence = *it;
 			}
@@ -109,7 +111,6 @@ using namespace std;
     if (sentence.getLexeme() == ";"){
 		cout<<"ENTITY ALL IS GOOD "<<sentence.getPlace()<<endl;
 		reverse_itEntity->set_place_fin_entity(sentence.getPlace());
-		cout<<"coucou 2 "<< reverse_itEntity->get_place_fin_entity()<<endl;
 		return list_entity;
     }
     else {
@@ -122,7 +123,7 @@ using namespace std;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////verif syntaxe port//////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- int VerifSyntaxe_Port(list<Mot> my_list_mot, list<Entity> list_entity, int num_entity, int iPlace){
+ list<Entity> VerifSyntaxe_Port(list<Mot> my_list_mot, list<Entity> list_entity, int num_entity, int iPlace){
     
 	list<Entity>::iterator itEn = list_entity.begin();
 	list<Mot>::iterator it = my_list_mot.begin(); 
@@ -132,12 +133,12 @@ using namespace std;
 	sentence = *it;
 	string nom_signal;
 	num_entity = 1;
-	for (int k = 0; k<num_entity;k++)
+	/*for (int k = 0; k<num_entity;k++)
 	{
 		itEn++;
 		ent = *itEn;
-	}
-   
+	}*/
+   	//cout<<"je suis entre dans verif port"<<endl;
     
    for (int j = sentence.getPlace();j<iPlace ; j++){
 		it++;
@@ -222,6 +223,8 @@ using namespace std;
 			if (sentence.getLexeme() == ")"){
 				it++;
     			sentence = *it;
+			
+			
 			}
 			else {
     			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
@@ -233,11 +236,15 @@ using namespace std;
     		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
     		exit(1);   
     	}   
-    
+	//On ajoute le signal a la liste de signaux 
+	(*itEn).add_signal(sig);
     } 
-    while (sentence.getLexeme() == ";");
-    ent.add_signal(sig);
- return sentence.getPlace();
+    while (sentence.getLexeme() == ";");	
+	//On donne la position de fin des siganux à Entity pour continuer la vérif syntaxique
+	cout<<"ceci est la valeur de sentence.getPlace() a la fin du while : "<<sentence.getPlace()<<endl;
+	(*itEn).set_place_fin_signal(sentence.getPlace());
+	cout<<"je suis avant le return de la verif port, size de la liste de signaux : "<< (*itEn).get_l_signal().size()<<endl;;
+ return list_entity;
  }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
