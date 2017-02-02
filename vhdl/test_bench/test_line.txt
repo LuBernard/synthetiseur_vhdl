@@ -51,22 +51,22 @@ end or_entity2;
 ARCHITECTURE or_archi2 of or_entity2 IS
    
    
-type int_array is array(3 to 09);
-type enum_type is ('ab', 'bs', 'cz', 'zss');
+type int_array2 is array(3 to 09);
+type enum_type2 is ('ab', 'bs', 'cz', 'zss');
 
 component or_entity is
 port(
-input_1: in bit;
-input_2: in bit;
+input_3: in bit;
+input_4: in bit;
 output: out bit
 );
 end component;
 
-variable data_v: bit_vector(7 downto 20);
-variable condition_v: bit;
+variable data_v2: bit_vector(7 downto 20);
+variable condition_v2: bit;
 
-signal port_i : bit;
-signal bus_signal: bit_vector (15 downto 10);
+signal port_i2 : bit;
+signal bus_signal2: bit_vector (15 downto 10);
 
 
 BEGIN

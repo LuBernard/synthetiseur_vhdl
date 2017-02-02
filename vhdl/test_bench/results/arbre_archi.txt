@@ -1,0 +1,18 @@
+Architecture : or_archi
+Entitee associee : or_entity
+type int_array array 3 to 09
+type enum_type ab bs cz zss 
+component or_entity port
+variable data_v bit_vector 7 downto 20
+variable condition_v bit
+signal port_i bit
+signal bus_signal bit_vector 15 downto 10
+Architecture : or_archi2
+Entitee associee : or_entity2
+type int_array2 array 3 to 09
+type enum_type2 ab bs cz zss 
+component or_entity port
+variable data_v2 bit_vector 7 downto 20
+variable condition_v2 bit
+signal port_i2 bit
+signal bus_signal2 bit_vector 15 downto 10

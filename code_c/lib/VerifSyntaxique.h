@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "Entity.h"
 #include "Signal.h"
+#include "Architecture.h"
 #include <list>
 #include "Mot.h"
 using namespace std;

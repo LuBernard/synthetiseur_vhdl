@@ -156,7 +156,7 @@ int VerifSyntaxe_Entity(list<Mot> my_list_mot, int iPos, list<Entity> &l_entity)
  
         if(arbre_entity)  // si l'ouverture a réussi
         {       
-            	arbre_entity<<"name entity : "<<(*itEntity).get_name_entity()<<endl;
+            	arbre_entity<<(*itEntity).get_name_entity()<<endl;
 		for (list<Signal>::iterator its = ls.begin(); its !=ls.end();its++)
 		{
 			arbre_entity<<(*its).get_name()<<" "<< (*its).get_type()<<" "<<(*its).get_IO()<<" "<<endl;
@@ -451,6 +451,7 @@ int VerifSyntaxe_Use(list<Mot> my_list_mot, int iPlace){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_entity){
+
     list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
@@ -458,6 +459,7 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_e
     string nom_entity;
     string nom_entityEnd;
     int iPlaceReturn;
+	bool cond =0;
     for (int j = sentence.getPlace(); j<iPos; j++){
 		it++;
 		sentence = *it;
@@ -471,15 +473,17 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_e
     	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getCarac() == "etiquette"){
-        nom_architecture = sentence.getLexeme();
+	if (sentence.getCarac() == "etiquette"){
+        	nom_architecture = sentence.getLexeme();
 		it++;
-    	sentence = *it;
+		sentence = *it;
 	}
 	else {
     	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
-    }
+    	}
+
+	
     if (sentence.getLexeme() == "of"){
 		it++;
     	sentence = *it;
@@ -488,11 +492,44 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_e
     	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getCarac() == "etiquette"){
-        nom_entity = sentence.getLexeme();
-		it++;
-    	sentence = *it;
+	if (sentence.getCarac() == "etiquette"){
+		nom_entity = sentence.getLexeme();
+
+		
+	 	ifstream arbre_entity("../../vhdl/test_bench/results/arbre_entity.txt");  // on ouvre en lecture
+		ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt",ios::app);  // on ouvre en ecriture
+		if(arbre_archi)  // si l'ouverture a fonctionné
+		{
+		        string contenu;  // déclaration d'une chaîne qui contiendra la ligne lue
+			
+			while(getline(arbre_entity, contenu))  // tant que l'on peut mettre la ligne dans "contenu"
+
+		       	{
+				cout<<contenu<<endl;
+				if (nom_entity == contenu)
+				{
+					cout<<"cond a 1"<<endl;
+					cond = 1;
+
+					if(arbre_archi)  // si l'ouverture a réussi
+					{       
+						arbre_archi<<"Architecture : "<<nom_architecture<<endl;
+						arbre_archi<<"Entitee associee : "<<nom_entity<<endl;
+					}
+				}
+		       	}
+		}
+		if (cond ==1)
+		{
+			it++;
+			sentence = *it;
+		}
+		else {
+	    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+	    	exit(1);   
+	    }
 	}
+
 	else {
     	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
@@ -510,15 +547,25 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_e
     	sentence = *it;
 		if (sentence.getLexeme() == "type")  {
     		iPlaceReturn = VerifSyntaxe_Type(my_list_mot,sentence.getPlace());
-    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+    		for (int j = sentence.getPlace(); j<iPlaceReturn-2; j++){
 				it++;
+				/*sentence = *it;
+				ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt",ios::app);  //on vide le fichier
+				if(arbre_archi)  // si l'ouverture a réussi
+				{       
+					arbre_archi<<sentence.getLexeme()<<" ";	
+					arbre_archi.close();  
+				}*/
 			}
+		it++;
+		it++;
     	} 
    		else if (sentence.getLexeme() =="component")  {
     		iPlaceReturn = VerifSyntaxe_Component(my_list_mot,sentence.getPlace(), l_entity);
     		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
 				it++;
 			}
+
     } 
    		else if (sentence.getLexeme() =="signal")  {
     		iPlaceReturn = VerifSyntaxe_Signal(my_list_mot,sentence.getPlace());
@@ -586,6 +633,7 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_e
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int VerifSyntaxe_Component(list<Mot> my_list_mot, int iPlace, list<Entity> &l_entity){
 
+	ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt",ios::app);  //on vide le fichier
     list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
@@ -601,6 +649,10 @@ int VerifSyntaxe_Component(list<Mot> my_list_mot, int iPlace, list<Entity> &l_en
     
     	if (sentence.getLexeme() == "component"){
     		it++;
+		if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<sentence.getLexeme()<<" ";	
+		}
     		sentence = *it;
     	}
     	else {
@@ -610,6 +662,10 @@ int VerifSyntaxe_Component(list<Mot> my_list_mot, int iPlace, list<Entity> &l_en
     	if (sentence.getCarac() == "etiquette"){
     		nom_component_debut = sentence.getLexeme();
     		it++;
+		if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<sentence.getLexeme()<<" ";	
+		}
     		sentence = *it;
     	}
     	else {
@@ -626,6 +682,11 @@ int VerifSyntaxe_Component(list<Mot> my_list_mot, int iPlace, list<Entity> &l_en
 		}
     	if (sentence.getLexeme() == "port"||sentence.getLexeme() == "generic"){
     		it++;
+		if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<sentence.getLexeme()<<endl;	
+			
+		}
     		sentence = *it;
     	}
     	else {
@@ -633,7 +694,6 @@ int VerifSyntaxe_Component(list<Mot> my_list_mot, int iPlace, list<Entity> &l_en
     		exit(1);
     	}
     	if (sentence.getLexeme() == "("){
-		int num_entity = 1;//on doit passer quelque chose en argument mais on ne s'en sert pas
     		iPlaceReturn = VerifSyntaxe_PortArchi(my_list_mot,sentence.getPlace());
     		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
 				it++;
@@ -698,6 +758,7 @@ int VerifSyntaxe_Type(list<Mot> my_list_mot, int iPlace){
     list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
+	ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt",ios::app);  //on vide le fichier
     for (int j = sentence.getPlace(); j<iPlace; j++){
 		it++;
 		sentence = *it;
@@ -707,6 +768,10 @@ int VerifSyntaxe_Type(list<Mot> my_list_mot, int iPlace){
     
     	if (sentence.getLexeme() == "type"){
 		it++;
+		if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<sentence.getLexeme()<<" ";	
+		}
     	sentence = *it;
 	}
 		else {
@@ -715,7 +780,12 @@ int VerifSyntaxe_Type(list<Mot> my_list_mot, int iPlace){
     }
    	 	if (sentence.getCarac() == "etiquette"){
 		it++;
+		if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<sentence.getLexeme()<<" ";	
+		}
     	sentence = *it;
+
 	}
 		else {
     	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
@@ -735,78 +805,119 @@ int VerifSyntaxe_Type(list<Mot> my_list_mot, int iPlace){
     		sentence = *it;
     		if (sentence.getCarac() == "etiquette"){ //variable 
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	 
+			}
     			sentence = *it;
+
+		}
+
+		else if (sentence.getLexeme() == "'"||sentence.getLexeme() == " \"" ){
+			it++;
+			sentence = *it;	
+			if (sentence.getCarac() == "etiquette"){ //variable 
+				it++;
+				if(arbre_archi)  // si l'ouverture a réussi
+				{       
+					arbre_archi<<sentence.getLexeme()<<" ";	
+				}
+				sentence = *it;
+
 			}
-			else if (sentence.getLexeme() == "'"||sentence.getLexeme() == " \"" ){
-					it++;
-    				sentence = *it;	
-					if (sentence.getCarac() == "etiquette"){ //variable 
-						it++;
-    					sentence = *it;
-    				}
-    				else {
-    					cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
-    					exit(1);   
-    				}
-    				if (sentence.getLexeme() == "'"||sentence.getLexeme() == " \"" ){ 
-						it++;
-    					sentence = *it;
-    				}
-    				else {
-    					cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
-    					exit(1);   
-    				}
+	    		else {
+	    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+	    			exit(1);   
+	    		}
+	    		if (sentence.getLexeme() == "'"||sentence.getLexeme() == " \"" ){ 
+				it++;
+	    			sentence = *it;
+	    		}
+	    		else {
+	    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+	    			exit(1);   
+	    		}
+	}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    		}
+    	}while (sentence.getLexeme() == ",");
+
+	if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<endl;	
+		}
+	}
+	else if (sentence.getLexeme() == "array"){
+		it++;
+		if(arbre_archi)  // si l'ouverture a réussi
+		{       
+			arbre_archi<<sentence.getLexeme()<<" ";	
+		}
+    		sentence = *it;
+
+    		if (sentence.getLexeme() == "("){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
 			}
-			else {
+    			sentence = *it;
+
+		}
+		else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    	}
+    		if (sentence.getLexeme() == "to"){
+			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
+    			sentence = *it;
+
+		}
+    		else if (sentence.getLexeme() == "downto"){
+			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
+    			sentence = *it;
+
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    		if (sentence.getCarac() == "etiquette"){
+			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<endl;
+				 
+			}
+    			sentence = *it;
+
+		}
+		else {
     			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     			exit(1);   
     		}
-    	}while (sentence.getLexeme() == ",");
-    	
-	}
-		else if (sentence.getLexeme() == "array"){
-		it++;
-    	sentence = *it;
-    	if (sentence.getLexeme() == "("){
-			it++;
-    		sentence = *it;
-		}
-		else {
+	}	
+	else {
     		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     		exit(1);   
-    	}
-    	if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
-			it++;
-    		sentence = *it;
-		}
-		else {
-    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
-    		exit(1);   
-    	}
-    	if (sentence.getLexeme() == "to"){
-			it++;
-    		sentence = *it;
-		}
-    	else if (sentence.getLexeme() == "downto"){
-			it++;
-    		sentence = *it;
-		}
-		else {
-    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
-    		exit(1);   
-    	}
-    	if (sentence.getCarac() == "etiquette"){
-			it++;
-    		sentence = *it;
-		}
-		else {
-    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
-    		exit(1);   
-    	}
-    }	
-		else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
-    	exit(1);   
     }
    		 if (sentence.getLexeme() == ")"){
 			it++;
@@ -835,6 +946,7 @@ int VerifSyntaxe_Type(list<Mot> my_list_mot, int iPlace){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
 
+ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt",ios::app);  //on vide le fichier
     list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
@@ -848,7 +960,16 @@ int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
 		it++;
     	sentence = *it;
 		if (sentence.getCarac() == "etiquette"){
-			string nom_signal = sentence.getLexeme(); 
+			string nom_signal = sentence.getLexeme();
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				it--;
+				sentence = *it;
+				arbre_archi<<sentence.getLexeme()<<" ";	
+				it ++;
+				sentence = *it;
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			} 
 			it++;
     		sentence = *it;
 		}
@@ -866,10 +987,18 @@ int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
     	}   
     	if (sentence.getLexeme() == "bit"){
 			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<endl;	
+			}
     		sentence = *it;
 		}
 		else if (sentence.getLexeme() == "bit_vector"){
 			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     		sentence = *it;
 			if (sentence.getLexeme() == "("){
 				it++;
@@ -881,6 +1010,10 @@ int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
     		}
     		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     			sentence = *it;
 			}
 			else {
@@ -889,10 +1022,18 @@ int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
     		}
     		if (sentence.getLexeme() == "to"){
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     			sentence = *it;
 			}
     		else if (sentence.getLexeme() == "downto"){
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     			sentence = *it;
 			}
 			else {
@@ -901,6 +1042,11 @@ int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
     		}
     		if (sentence.getCarac() == "etiquette"){
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<endl;
+				
+			}
     			sentence = *it;
 			}
 			else {
@@ -933,6 +1079,7 @@ int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
 
+ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt",ios::app);  //on vide le fichier
  list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
@@ -947,6 +1094,17 @@ int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
 		if (sentence.getCarac() == "etiquette"){
 			string nom_signal = sentence.getLexeme(); 
 			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				it--;
+				it--;//on récupère le mot vaiable
+				sentence = *it;
+				arbre_archi<<sentence.getLexeme()<<" ";	
+				it++;//on réinstancie les itérateurs
+				sentence = *it;
+				arbre_archi<<sentence.getLexeme()<<" ";	
+				it++;
+			}
     		sentence = *it;
 		}
 		else {
@@ -963,10 +1121,18 @@ int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
     	}   
     	if (sentence.getLexeme() == "bit"){
 			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<endl;	
+			}
     		sentence = *it;
 		}
 		else if (sentence.getLexeme() == "bit_vector"){
 			it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     		sentence = *it;
 			if (sentence.getLexeme() == "("){
 				it++;
@@ -978,6 +1144,10 @@ int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
     		}
     		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     			sentence = *it;
 			}
 			else {
@@ -986,10 +1156,18 @@ int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
     		}
     		if (sentence.getLexeme() == "to"){
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     			sentence = *it;
 			}
     		else if (sentence.getLexeme() == "downto"){
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<" ";	
+			}
     			sentence = *it;
 			}
 			else {
@@ -998,6 +1176,11 @@ int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
     		}
     		if (sentence.getCarac() == "etiquette"){
 				it++;
+			if(arbre_archi)  // si l'ouverture a réussi
+			{       
+				arbre_archi<<sentence.getLexeme()<<endl;
+				
+			}
     			sentence = *it;
 			}
 			else {

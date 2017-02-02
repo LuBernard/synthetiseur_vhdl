@@ -29,8 +29,10 @@ int main(void)
 	list<Entity>::iterator iterrator_of_list_entity = list_entity.begin();
 	list<Signal>  list_signal;
 	list<Signal>::iterator iterrator_of_list_siganl = list_signal.begin();
-	list<Architecture>  list_archi;
 	list<Librairy>  list_librairy;
+
+	list<Architecture> list_archi;
+	list<Architecture>::iterator it_of_archi = list_archi.begin();
 
 	ofstream arbre_entity("../../vhdl/test_bench/results/arbre_entity.txt");  //on vide le fichier
         if(arbre_entity)  // si l'ouverture a réussi
@@ -40,7 +42,12 @@ int main(void)
 	ofstream arbre_library("../../vhdl/test_bench/results/arbre_library.txt");  //on vide le fichier
         if(arbre_library)  // si l'ouverture a réussi
         {       	
-                arbre_entity.close();  
+                arbre_library.close();  
+        }
+	ofstream arbre_archi("../../vhdl/test_bench/results/arbre_archi.txt");  //on vide le fichier
+        if(arbre_archi)  // si l'ouverture a réussi
+        {       	
+                arbre_archi.close();  
         }
 	
 	string chemin = "../../vhdl/test_line.txt";
@@ -119,7 +126,7 @@ int main(void)
 			int placeFinEntity = VerifSyntaxe_Entity(lMot,(*iterrator_of_lMot).getPlace(), list_entity);
 			for (int j = (*iterrator_of_lMot).getPlace(); j<placeFinEntity; j++){
 				iterrator_of_lMot++;
-				//cout<<"coucou"<<endl;
+				
 			}
 		}
 		else if ((*iterrator_of_lMot).getLexeme() == "architecture"){
@@ -149,7 +156,4 @@ int main(void)
 	}
 	
 
-///////////////////////////////////////////////////////////////////////////////////////
-
-	//aficher_list_entity(list_entity);
 }
