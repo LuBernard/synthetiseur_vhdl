@@ -1,0 +1,11 @@
+
+component nom_entity is 
+port (
+input_1: in std_logic;
+input_2: in std_logic;
+output: out std_logic
+
+);
+end nom_entity;
+
+

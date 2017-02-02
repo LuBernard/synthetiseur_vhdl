@@ -1,41 +1,49 @@
 #include "../lib/VerifSyntaxique.h"
 #include <list>
-
-
+#include <fstream>
+ 
 using namespace std;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Entity(list<Mot> my_list_mot, int iPos, list<Entity> &l_entity){
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////verif syntaxe Entity////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- list<Entity> VerifSyntaxe_Entity(list<Mot> my_list_mot, list<Entity> list_entity){
+    list<Mot>::iterator it = my_list_mot.begin(); 
+	list<Entity>::reverse_iterator reverse_itEntity = l_entity.rbegin();
+	list<Entity>::iterator itEntity = l_entity.begin();
 
-	list<Mot>::iterator it = my_list_mot.begin(); 
-	list<Entity>::iterator itEntity = list_entity.begin(); 
-	list<Entity>::reverse_iterator reverse_itEntity = list_entity.rbegin(); 
-	Mot sentence;
-	sentence = *it;
-	string nom_entity_debut;
-	string nom_entity_fin;
-	int iPlace;
-
-
+	Entity ent;
+    Mot sentence;
+    sentence = *it;
+    string nom_entity_debut;
+    string nom_entity_fin;
+    int iPlaceReturn;
+	
+  	for (int j = sentence.getPlace(); j<iPos; j++){
+		it++;
+		sentence = *it;
+	}
+    
     if (sentence.getLexeme() == "entity"){
     	it++;
-    	sentence = *it;	
+    	sentence = *it;
     }
     else {
-    	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position : "<<sentence.getPlace()<<endl;
+    	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :  "<<sentence.getPlace()<<endl;
     	exit(1);
     }
     if (sentence.getCarac() == "etiquette"){
     	nom_entity_debut = sentence.getLexeme();
     	it++;
     	sentence = *it;
-	list_entity.push_back(Entity(nom_entity_debut));
-	(*itEntity).set_numero_entity(list_entity.size());
-	cout<<"numero entity : "<<(*itEntity).get_numero_entity()<<endl;
-	reverse_itEntity = list_entity.rbegin();
+	//cout<<"nom_entity_debut : "<<nom_entity_debut<<endl;
+	l_entity.push_back(Entity(nom_entity_debut));
+	itEntity++;	
 
+	//cout<<"size l_entity : "<<l_entity.size()<<endl;
+	//cout<<"name entity : "<<(*itEntity).get_name()<<endl;
+	
+	(*itEntity).set_numero_entity(l_entity.size());
     }
     else {
     	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
@@ -58,16 +66,28 @@ using namespace std;
     	exit(1);
     }
     if (sentence.getLexeme() == "("){
-		int a = 0;//variable a enlever quand on aura plusieurs entités
-		iPlace = sentence.getPlace();
-		//cout<<"je suis avant la verif de port"<<endl;
-    		list_entity = VerifSyntaxe_Port(my_list_mot,list_entity, (*itEntity).get_numero_entity(), iPlace);
 
-    		for (int j = sentence.getPlace(); j<(*reverse_itEntity).get_place_fin_signal(); j++){
+
+    		ent = VerifSyntaxe_Port2(my_list_mot,sentence.getPlace(), (*itEntity).get_numero_entity(), l_entity);
+		list<Signal> s = ent.get_l_signal();
+		list<Signal>::iterator its = s.begin();
+		for (its;its != s.end() ;its++){
+			(*itEntity).add_signal((*its));
+		}
+		/*list<Signal> ls = (*itEntity).get_l_signal();
+		for (list<Signal>::iterator its = ls.begin(); its !=ls.end();its++)
+		{
+			cout<<(*its).get_name()<<" "<< (*its).get_type()<<" "<<(*its).get_IO()<<" "<<endl;
+		}*/
+	
+		int iPlaceReturn = ent.get_place_fin_signal();
+    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
 				it++;
 				sentence = *it;
 			}
-    	
+		
+		
+    		
     }
     else {
     	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
@@ -76,6 +96,7 @@ using namespace std;
     if (sentence.getLexeme() == ")"){
     	it++;
     	sentence = *it;
+	
     }
     else {
     	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
@@ -98,6 +119,7 @@ using namespace std;
     	exit(1);
     }
     if (sentence.getCarac() == "etiquette"){
+
     	nom_entity_fin = sentence.getLexeme();
     	if (nom_entity_debut == nom_entity_fin) {
     		it++;
@@ -113,48 +135,57 @@ using namespace std;
     	exit(1);
     }
     if (sentence.getLexeme() == ";"){
-		cout<<"ENTITY ALL IS GOOD "<<sentence.getPlace()<<endl;
-		reverse_itEntity->set_place_fin_entity(sentence.getPlace());
 		it++;
-    		sentence = *it;
-		//return list_entity;
+    		//sentence = *it;
+		
     }
     else {
     	cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
     	exit(1);
     }
-	if (sentence.getLexeme() == "entity") {
-		cout<<"il y a une autre entity"<<endl;
-		return list_entity;
-	}
+	it--;
 
-	else {
-		return list_entity;
-	}
+	////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////generation arbre entity/////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+
+	//cout<<"name entity : "<<(*itEntity).get_name_entity()<<endl;
+
+	list<Signal> ls = (*itEntity).get_l_signal();
+	ofstream arbre_entity("../../vhdl/test_bench/results/arbre_entity.txt", ios::app);  // on ouvre le fichier en lecture
+ 
+        if(arbre_entity)  // si l'ouverture a réussi
+        {       
+            	arbre_entity<<"name entity : "<<(*itEntity).get_name_entity()<<endl;
+		for (list<Signal>::iterator its = ls.begin(); its !=ls.end();its++)
+		{
+			arbre_entity<<(*its).get_name()<<" "<< (*its).get_type()<<" "<<(*its).get_IO()<<" "<<endl;
+		}
+                arbre_entity.close();  
+        }
+
+
+
+	return sentence.getPlace();
  }
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////verif syntaxe port//////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- list<Entity> VerifSyntaxe_Port(list<Mot> my_list_mot, list<Entity> list_entity, int num_entity, int iPlace){
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Port(list<Mot> my_list_mot,int iPlace, int num_entity, list<Entity>  &l_entity){
     
-	list<Entity>::iterator itEn = list_entity.begin();
-	list<Mot>::iterator it = my_list_mot.begin(); 
-	Mot sentence;
+    list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    string nom_signal;
 	Signal sig;
+	list<Entity>::iterator itEn = l_entity.begin();
 	Entity ent = *itEn;
-	sentence = *it;
-	string nom_signal;
-	num_entity = 1;
-	for (int k = 0; k<num_entity-1;k++)
+    	for (int k = 0; k<num_entity-1;k++)
 	{
 		itEn++;
 		ent = *itEn;
 	}
-   	//cout<<"je suis entre dans verif port"<<endl;
-    
-   for (int j = sentence.getPlace();j<iPlace ; j++){
+    for (int j = sentence.getPlace(); j<iPlace; j++){
 		it++;
 		sentence = *it;
 	}	
@@ -168,7 +199,7 @@ using namespace std;
     		sentence = *it;
 		}
 		else {
-    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     		exit(1);   
     	}
     	if (sentence.getLexeme() == ":"){
@@ -182,28 +213,28 @@ using namespace std;
 
     	if (sentence.getLexeme() == "in"||sentence.getLexeme() == "out"){
 			it++;
-		sig.set_IO(sentence.getLexeme());
-    		sentence = *it;
+			sig.set_IO(sentence.getLexeme());
+    			sentence = *it;
 		}
 		else {
     		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
     		exit(1);   
     	}   
     	if (sentence.getLexeme() == "bit"){
-		it++;
-		sig.set_type(sentence.getLexeme());
-    		sentence = *it;
-	}
-	else if (sentence.getLexeme() == "bit_vector"){
-		it++;
-    		sentence = *it;
-		sig.set_type(sentence.getLexeme());
-		if (sentence.getLexeme() == "("){
 			it++;
-    			sentence = *it;
+			sig.set_type(sentence.getLexeme());
+    		sentence = *it;
 		}
-		else {
-    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+		else if (sentence.getLexeme() == "bit_vector"){
+			it++;
+			sig.set_type(sentence.getLexeme());
+    		sentence = *it;
+			if (sentence.getLexeme() == "("){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     			exit(1);   
     		}
     		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
@@ -211,7 +242,7 @@ using namespace std;
     			sentence = *it;
 			}
 			else {
-    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     			exit(1);   
     		}
     		if (sentence.getLexeme() == "to"){
@@ -223,7 +254,7 @@ using namespace std;
     			sentence = *it;
 			}
 			else {
-    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     			exit(1);   
     		}
     		if (sentence.getCarac() == "etiquette"){
@@ -231,17 +262,15 @@ using namespace std;
     			sentence = *it;
 			}
 			else {
-    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     			exit(1);   
     		}
 			if (sentence.getLexeme() == ")"){
 				it++;
     			sentence = *it;
-			
-			
 			}
 			else {
-    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     			exit(1);   
     		}
     		
@@ -249,45 +278,197 @@ using namespace std;
 		else {
     		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
     		exit(1);   
-    	}   
+    	}
 	//On ajoute le signal a la liste de signaux 
 	(*itEn).add_signal(sig);
+	list<Signal> ls = (*itEn).get_l_signal();
     } 
-    while (sentence.getLexeme() == ";");	
-	//On donne la position de fin des siganux à Entity pour continuer la vérif syntaxique
-	cout<<"ceci est la valeur de sentence.getPlace() a la fin du while : "<<sentence.getPlace()<<endl;
-	(*itEn).set_place_fin_signal(sentence.getPlace());
-	cout<<"je suis avant le return de la verif port, size de la liste de signaux : "<< (*itEn).get_l_signal().size()<<endl;;
- return list_entity;
+    while (sentence.getLexeme() == ";");
+ return sentence.getPlace();
  }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Library(list<Mot> my_list_mot, int iPos){
+    list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    string nom_library;
+    int iPlaceReturn;
+	ofstream arbre_library("../../vhdl/test_bench/results/arbre_library.txt", ios::app);  //on vide le fichier
+    for (int j = sentence.getPlace(); j<iPos; j++){
+		it++;
+		sentence = *it;
+	}
+	if (sentence.getLexeme() == "library"){
+		it++;
+    	sentence = *it;
+	}
+	else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    	exit(1);   
+    }
+	if (sentence.getCarac() == "etiquette"){
+	
+        if(arbre_library)  // si l'ouverture a réussi
+        {       	
+		arbre_library<<"library : "<<sentence.getLexeme()<<endl;
+		arbre_library.close(); 
+                
+        }
+		string nom_library = sentence.getLexeme(); 
+		it++;
+    	sentence = *it;
+	}
+	else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    	exit(1);   
+    }
+    if (sentence.getLexeme() == ";"){
+    	it++;
+    	sentence = *it;
+    }
+	else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    	exit(1);   
+    }
+    if (sentence.getLexeme() == "use"){
+  		iPlaceReturn = VerifSyntaxe_Use(my_list_mot,sentence.getPlace());
+  		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+			it++;
+			sentence = *it;
+		}
+    	
+	}
+	else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    	exit(1);   
+    }
+	
+	return sentence.getPlace();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Use(list<Mot> my_list_mot, int iPlace){
+    list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    string name_library = "";
+    for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}
+	
+	do {
+		if (sentence.getLexeme() == "use"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+   	 		exit(1);  
+   	 	}
+    	if (sentence.getCarac() == "etiquette"){
+			it++;
+    		sentence = *it;
+		name_library = sentence.getLexeme();
+		
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);  
+   		}    
+    	if (sentence.getLexeme() == "."){
+			it++;
+    		sentence = *it;
+		name_library = name_library + sentence.getLexeme();
 
-int VerifSyntaxe_Use(list<Mot> my_list_mot){
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);  
+    	}
+    	if (sentence.getLexeme() == "all"){
+			it++;
+    		sentence = *it;
+		name_library = name_library + sentence.getLexeme();
 
+		}
+		else if (sentence.getCarac() == "etiquette"){
+			it++;
+    		sentence = *it;	
+		name_library = name_library + sentence.getLexeme();
+    		if (sentence.getLexeme() == "."){
+				it++;
+    			sentence = *it;
+			name_library = name_library + sentence.getLexeme();
 
+			}
+			else {
+    			cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    			exit(1);  
+    		}
+    		if (sentence.getLexeme() == "all"){
+				it++;
+    			sentence = *it;
+			name_library = name_library + sentence.getLexeme();
 
+			}
+			else {
+    			cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    			exit(1);  
+    		}
+    		
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);  
+    	}    
+    	if (sentence.getLexeme() == ";"){
+			it++;
+    		sentence = *it;
 
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);  
+    	}    
+	}
+	while (sentence.getLexeme() == "use");
+		it--;
+    	sentence = *it;
 
-
-
+ return sentence.getPlace();	
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int VerifSyntaxe_Architecture(list<Mot> my_list_mot){
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+int VerifSyntaxe_Architecture(list<Mot> my_list_mot, int iPos, list<Entity> &l_entity){
     list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
     string nom_architecture;	
     string nom_entity;
+    string nom_entityEnd;
+    int iPlaceReturn;
+    for (int j = sentence.getPlace(); j<iPos; j++){
+		it++;
+		sentence = *it;
+	}
     
     if (sentence.getLexeme() == "architecture"){
 		it++;
     	sentence = *it;
 	}
 	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
     if (sentence.getCarac() == "etiquette"){
@@ -296,7 +477,7 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot){
     	sentence = *it;
 	}
 	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
     if (sentence.getLexeme() == "of"){
@@ -304,7 +485,7 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot){
     	sentence = *it;
 	}
 	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
     if (sentence.getCarac() == "etiquette"){
@@ -313,7 +494,7 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot){
     	sentence = *it;
 	}
 	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
     if (sentence.getLexeme() == "is"){
@@ -322,98 +503,904 @@ int VerifSyntaxe_Architecture(list<Mot> my_list_mot){
     	sentence = *it;
 	}
 	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getLexeme() == "begin"){
-        nom_entity = sentence.getLexeme();
+    do {
+    	sentence = *it;
+		if (sentence.getLexeme() == "type")  {
+    		iPlaceReturn = VerifSyntaxe_Type(my_list_mot,sentence.getPlace());
+    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+				it++;
+			}
+    	} 
+   		else if (sentence.getLexeme() =="component")  {
+    		iPlaceReturn = VerifSyntaxe_Component(my_list_mot,sentence.getPlace(), l_entity);
+    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+				it++;
+			}
+    } 
+   		else if (sentence.getLexeme() =="signal")  {
+    		iPlaceReturn = VerifSyntaxe_Signal(my_list_mot,sentence.getPlace());
+    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+				it++;
+			}
+    	} 
+   		else if (sentence.getLexeme() =="variable")  {
+    		iPlaceReturn = VerifSyntaxe_Variable(my_list_mot,sentence.getPlace());
+    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+				it++;
+			}
+    	}
+    	else if (sentence.getCarac() != "mot clef"){
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);  
+    	
+    	}  
+    }while ( sentence.getLexeme() != "begin");  
+    int k = 0;
+	while (sentence.getLexeme() != "architecture") {
+    	it++;
+		sentence = *it;
+		k++;
+		if (it==my_list_mot.end()){
+			cout<<"Erreur : il n'y a pas de end architecture"<<endl;
+			exit(1);
+		}
+		
+    }
+    it--;
+    sentence = *it;
+    if (sentence.getLexeme() == "end"){
+        nom_architecture = sentence.getLexeme();
 		it++;
     	sentence = *it;
 	}
-	else if (sentence.getLexeme() == "type")  {
-		   	/*do {
-    		iPlace = TestSignal(it)
-    		for (int j = sentence.getPlace(); j<iPlace; j++){
-				it++;
-			}
-    	}while (sentence.getLexeme() == ";");*/
-    } 
-    else if (sentence.getLexeme() =="component")  {
-		   	/*do {
-    		iPlace = TestSignal(it)
-    		for (int j = sentence.getPlace(); j<iPlace; j++){
-				sentence = *it;
-			}
-    	}while (sentence.getLexeme() == "type");*/
-    } 
 	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    	exit(1);   
+    }    
+    if (sentence.getLexeme() == "architecture"){
+			it++;
+    		sentence = *it;
+	}
+	else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }     
-
+    if (sentence.getLexeme() == ";"){
+        nom_architecture = sentence.getLexeme();
+		it++;
+    	sentence = *it;
+	}
+	else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    	exit(1);   
+    } 
+		it--;
+    	sentence = *it;
 	return sentence.getPlace();            
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
- int VerifSyntaxe_Type(list<Mot> my_list_mot){
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Component(list<Mot> my_list_mot, int iPlace, list<Entity> &l_entity){
 
     list<Mot>::iterator it = my_list_mot.begin(); 
     Mot sentence;
     sentence = *it;
-    string nom_architecture;	
-    string nom_entity;
+    string nom_component_debut;
+    string nom_component_fin;
+    int iPlaceReturn;
     
-    if (sentence.getLexeme() == "type"){
+    for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}	
+	do {
+    
+    	if (sentence.getLexeme() == "component"){
+    		it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :  "<<sentence.getPlace()<<endl;
+    		exit(1);
+   	 	}	
+    	if (sentence.getCarac() == "etiquette"){
+    		nom_component_debut = sentence.getLexeme();
+    		it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == "is"){
+    		it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);    
+		}
+    	if (sentence.getLexeme() == "port"||sentence.getLexeme() == "generic"){
+    		it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    	if (sentence.getLexeme() == "("){
+		int num_entity = 1;//on doit passer quelque chose en argument mais on ne s'en sert pas
+    		iPlaceReturn = VerifSyntaxe_PortArchi(my_list_mot,sentence.getPlace());
+    		for (int j = sentence.getPlace(); j<iPlaceReturn; j++){
+				it++;
+				sentence = *it;
+			}
+    	
+    	}
+   	 	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    	if (sentence.getLexeme() == ")"){
+    		it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    	if (sentence.getLexeme() == ";"){
+    		it++;
+    		sentence = *it;    	
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    	if (sentence.getLexeme() == "end"){
+    		it++;
+    		sentence = *it;
+    	}
+   	 	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    	if (sentence.getLexeme() == "component"){
+    		it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    	if (sentence.getLexeme() == ";"){
+			it++;
+    		sentence = *it;
+    	}
+    	else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);
+    	}
+    
+	} while (sentence.getLexeme() == "component");	
+	
+	return sentence.getPlace();	
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Type(list<Mot> my_list_mot, int iPlace){
+
+    list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+		
+	}
+    do {
+    
+    	if (sentence.getLexeme() == "type"){
 		it++;
     	sentence = *it;
 	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+		else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getCarac() == "etiquette"){
+   	 	if (sentence.getCarac() == "etiquette"){
 		it++;
     	sentence = *it;
 	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+		else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getLexeme() == "is"){
+    	if (sentence.getLexeme() == "is"){
 		it++;
     	sentence = *it;
 	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+		else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getLexeme() == "("){
+    	if (sentence.getLexeme() == "("){
+    	do{
+			it++;
+    		sentence = *it;
+    		if (sentence.getCarac() == "etiquette"){ //variable 
+				it++;
+    			sentence = *it;
+			}
+			else if (sentence.getLexeme() == "'"||sentence.getLexeme() == " \"" ){
+					it++;
+    				sentence = *it;	
+					if (sentence.getCarac() == "etiquette"){ //variable 
+						it++;
+    					sentence = *it;
+    				}
+    				else {
+    					cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    					exit(1);   
+    				}
+    				if (sentence.getLexeme() == "'"||sentence.getLexeme() == " \"" ){ 
+						it++;
+    					sentence = *it;
+    				}
+    				else {
+    					cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    					exit(1);   
+    				}
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    	}while (sentence.getLexeme() == ",");
+    	
+	}
+		else if (sentence.getLexeme() == "array"){
 		it++;
     	sentence = *it;
-	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+    	if (sentence.getLexeme() == "("){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == "to"){
+			it++;
+    		sentence = *it;
+		}
+    	else if (sentence.getLexeme() == "downto"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getCarac() == "etiquette"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    }	
+		else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }
-    if (sentence.getLexeme() == ")"){
+   		 if (sentence.getLexeme() == ")"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == ";"){
 		it++;
     	sentence = *it;
 	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
-    	exit(1);   
-    }
-    if (sentence.getLexeme() == ";"){
-		it++;
-    	sentence = *it;
-	}
-	else {
-    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère"<<sentence.getLexeme()<<endl;
+		else {
+    	cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
     	exit(1);   
     }  
-	return sentence.getPlace();
+
+    } 
+    while (sentence.getLexeme() == "type");	
+	return sentence.getPlace();	
+		
 }  
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Signal(list<Mot> my_list_mot, int iPlace){
+
+    list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    string nom_signal;
+    
+   for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}	
+	do {
+		it++;
+    	sentence = *it;
+		if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == ":"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	if (sentence.getLexeme() == "bit"){
+			it++;
+    		sentence = *it;
+		}
+		else if (sentence.getLexeme() == "bit_vector"){
+			it++;
+    		sentence = *it;
+			if (sentence.getLexeme() == "("){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getLexeme() == "to"){
+				it++;
+    			sentence = *it;
+			}
+    		else if (sentence.getLexeme() == "downto"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+			if (sentence.getLexeme() == ")"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	it++;
+		sentence = *it;
+    
+    } 
+    while (sentence.getLexeme() == "signal");
+	return sentence.getPlace();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Variable(list<Mot> my_list_mot, int iPlace){
+
+ list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    
+   for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}	
+	do {
+		it++;
+    	sentence = *it;
+		if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == ":"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	if (sentence.getLexeme() == "bit"){
+			it++;
+    		sentence = *it;
+		}
+		else if (sentence.getLexeme() == "bit_vector"){
+			it++;
+    		sentence = *it;
+			if (sentence.getLexeme() == "("){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getLexeme() == "to"){
+				it++;
+    			sentence = *it;
+			}
+    		else if (sentence.getLexeme() == "downto"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+			if (sentence.getLexeme() == ")"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	it++;
+		sentence = *it;
+    
+    } 
+    while (sentence.getLexeme() == "variable");
+
+	return sentence.getPlace();
 
 
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int VerifSyntaxe_Process(list<Mot> my_list_mot, int iPlace){
+ 	list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    string nom_process;
+    
+ 	for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}	
+ 	if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+    	if (sentence.getLexeme() == ":"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == "process"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    		
+	}
+	else if (sentence.getLexeme() == "process"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+
+  	if (sentence.getLexeme() == "("){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    do{
+    		if (sentence.getCarac() == "etiquette"){ //variable 
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    }while (sentence.getLexeme() == ",");
+    
+	if (sentence.getLexeme() == ")"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+	}	
+	else {
+		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+	 	exit(1);   
+    }
+    while (sentence.getLexeme() != "begin"){
+    	it++;
+		sentence = *it;    
+    }
+
+	if (sentence.getLexeme() == "begin"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    while (sentence.getLexeme() != "process") {
+    	it++;
+		sentence = *it;
+    }
+    it--;
+	sentence = *it;
+	if (sentence.getLexeme() == "end"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+	if (sentence.getLexeme() == "process"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	} 
+	if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}  
+	if (sentence.getLexeme() == ";"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+	else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    return sentence.getPlace();	
+ }
+ 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+ int VerifSyntaxe_PortArchi(list<Mot> my_list_mot,int iPlace){
+    
+    list<Mot>::iterator it = my_list_mot.begin(); 
+    Mot sentence;
+    sentence = *it;
+    string nom_signal;
+
+    for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}	
+	do {
+		it++;
+    	sentence = *it;
+		if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == ":"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}
+
+    	if (sentence.getLexeme() == "in"||sentence.getLexeme() == "out"){
+			it++;
+    			sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	if (sentence.getLexeme() == "bit"){
+			it++;
+    		sentence = *it;
+		}
+		else if (sentence.getLexeme() == "bit_vector"){
+			it++;
+    		sentence = *it;
+			if (sentence.getLexeme() == "("){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getLexeme() == "to"){
+				it++;
+    			sentence = *it;
+			}
+    		else if (sentence.getLexeme() == "downto"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+			if (sentence.getLexeme() == ")"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}
+    } 
+    while (sentence.getLexeme() == ";");
+ return sentence.getPlace();
+ }
+ ////////////////////////////////////////////////////////////////////////
+
+void aficher_list_entity(list<Entity>  l_entity)
+{
+	//list<Entity>::iterator itEntity = l_entity.begin();
+	//itEntity ++;
+	//cout<<"name entity : "<<(*itEntity).get_name_entity()<<endl;
+	//cout<<"numero entity : "<<(*itEntity).get_numero_entity()<<endl;
+	/*list<Signal> ls = (*itEntity).get_l_signal();
+	for (list<Signal>::iterator it = ls.begin(); it !=ls.end();it++)
+	{
+		cout<<(*it).get_name()<<" "<< (*it).get_type()<<" "<<(*it).get_IO()<<" "<<endl;
+	}*/
+}
+ 
+ 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Entity VerifSyntaxe_Port2(list<Mot> my_list_mot,int iPlace, int num_entity, list<Entity>  l_entity){
+    
+    list<Mot>::iterator it = my_list_mot.begin();
+    Mot sentence;
+    sentence = *it;
+    string nom_signal;
+	Signal sig;
+	list<Entity>::iterator itEn = l_entity.begin();
+	Entity ent = *itEn;
+    	for (int k = 0; k<num_entity-1;k++)
+	{
+		itEn++;
+		ent = *itEn;
+	}
+    for (int j = sentence.getPlace(); j<iPlace; j++){
+		it++;
+		sentence = *it;
+	}	
+	do {
+		it++;
+    	sentence = *it;
+		if (sentence.getCarac() == "etiquette"){
+			string nom_signal = sentence.getLexeme(); 
+			sig.set_name(nom_signal);//ajout de signal
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    		exit(1);   
+    	}
+    	if (sentence.getLexeme() == ":"){
+			it++;
+    		sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}
+
+    	if (sentence.getLexeme() == "in"||sentence.getLexeme() == "out"){
+			it++;
+			sig.set_IO(sentence.getLexeme());
+    			sentence = *it;
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}   
+    	if (sentence.getLexeme() == "bit"){
+			it++;
+			sig.set_type(sentence.getLexeme());
+    		sentence = *it;
+		}
+		else if (sentence.getLexeme() == "bit_vector"){
+			it++;
+			sig.set_type(sentence.getLexeme());
+    		sentence = *it;
+			if (sentence.getLexeme() == "("){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){ //NUMBER PAR LA SUITE 
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getLexeme() == "to"){
+				it++;
+    			sentence = *it;
+			}
+    		else if (sentence.getLexeme() == "downto"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		if (sentence.getCarac() == "etiquette"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+			if (sentence.getLexeme() == ")"){
+				it++;
+    			sentence = *it;
+			}
+			else {
+    			cout<<" erreur au mot :"<<sentence.getLexeme()<< " a la position :"<<sentence.getPlace()<<" Caractère :  "<<sentence.getLexeme()<<endl;
+    			exit(1);   
+    		}
+    		
+		}
+		else {
+    		cout<<"erreur au mot :"<<sentence.getLexeme()<< "a la position :"<<sentence.getPlace()<<endl;
+    		exit(1);   
+    	}
+	//On ajoute le signal a la liste de signaux 
+	(*itEn).add_signal(sig);
+	(*itEn).set_place_fin_signal(sentence.getPlace());
+    } 
+    while (sentence.getLexeme() == ";");
+ return (*itEn);
+ }
 

@@ -1,0 +1,5 @@
+	(
+	input_1 : IN std_logic;
+	input_2 : IN std_logic;
+	input_3 : OUT std_logic
+	)

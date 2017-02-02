@@ -4,7 +4,8 @@
 #include "../lib/Chaine.h"
 #include "../lib/lecture_fichier.h"
 #include "../lib/Entity.h"
-#include "../lib/Signal.h"
+#include "../lib/Librairy.h"
+#include "../lib/Architecture.h"
 #include <stdio.h>
 #include <iostream>
 #include <list>
@@ -17,16 +18,33 @@ int main(void)
 	list<string> linter1;
 	list<string> lfinal;
 	list<Mot> lMot;
-	list<Signal>lSignal;
+    bool fichier_Non_Vide = 0;
+    bool bFinSyntaxe = 0;
 	list<string>::iterator iterrator_of_linter = linter.begin();
 	list<string>::iterator iterrator_of_linter1 = linter1.begin();
 	list<string>::iterator iterrator_of_lfinal = lfinal.begin();
 	list<Mot>::iterator iterrator_of_lMot = lMot.begin();
-	list<Signal>::iterator iterrator_of_lSiganl = lSignal.begin();
+
+	list<Entity>  list_entity;
+	list<Entity>::iterator iterrator_of_list_entity = list_entity.begin();
+	list<Signal>  list_signal;
+	list<Signal>::iterator iterrator_of_list_siganl = list_signal.begin();
+	list<Architecture>  list_archi;
+	list<Librairy>  list_librairy;
+
+	ofstream arbre_entity("../../vhdl/test_bench/results/arbre_entity.txt");  //on vide le fichier
+        if(arbre_entity)  // si l'ouverture a réussi
+        {       	
+                arbre_entity.close();  
+        }
+	ofstream arbre_library("../../vhdl/test_bench/results/arbre_library.txt");  //on vide le fichier
+        if(arbre_library)  // si l'ouverture a réussi
+        {       	
+                arbre_entity.close();  
+        }
+	
 	string chemin = "../../vhdl/test_line.txt";
 	l = lecture_fichier(chemin);
-	list<Entity> list_entity;
-	list<Entity>::iterator iterrator_of_list_entity = list_entity.begin();
 	char a[32];
 	a[0]=9;
 	a[1]=32;
@@ -80,25 +98,58 @@ int main(void)
 	lMot = transfoStringMot(lfinal);
 	
 	
-	/*for(iterrator_of_lMot = lMot.begin() ; iterrator_of_lMot != lMot.end() ; ++iterrator_of_lMot)
+	for(iterrator_of_lMot = lMot.begin() ; iterrator_of_lMot != lMot.end() ; ++iterrator_of_lMot)
 	{
 		cout << (*iterrator_of_lMot).getLexeme() << " "<<(*iterrator_of_lMot).getCarac()<<" "<<(*iterrator_of_lMot).getPlace() <<endl;
-	}*/
-	
+	}
+
 	erreurOrthographe(lMot);
-	list_entity = VerifSyntaxe_Entity(lMot, list_entity);
 	
-	iterrator_of_list_entity = list_entity.begin();
+	
+	iterrator_of_lMot = lMot.begin();
+	while (bFinSyntaxe != 1) {
+		fichier_Non_Vide = 1;
+		if ((*iterrator_of_lMot).getLexeme() == "library"){
+			int placeFinLibrary = VerifSyntaxe_Library(lMot,(*iterrator_of_lMot).getPlace());
+			for (int j = (*iterrator_of_lMot).getPlace(); j<placeFinLibrary; j++){
+				iterrator_of_lMot++;
+			}
+		}
+		else if ((*iterrator_of_lMot).getLexeme() == "entity"){
+			int placeFinEntity = VerifSyntaxe_Entity(lMot,(*iterrator_of_lMot).getPlace(), list_entity);
+			for (int j = (*iterrator_of_lMot).getPlace(); j<placeFinEntity; j++){
+				iterrator_of_lMot++;
+				//cout<<"coucou"<<endl;
+			}
+		}
+		else if ((*iterrator_of_lMot).getLexeme() == "architecture"){
+			int placeFinArchitecture = VerifSyntaxe_Architecture(lMot,(*iterrator_of_lMot).getPlace(), list_entity);
+			for (int j = (*iterrator_of_lMot).getPlace(); j<placeFinArchitecture; j++){
+				iterrator_of_lMot++;
+			}
 
-	for ( iterrator_of_list_entity = list_entity.begin(); iterrator_of_list_entity != list_entity.end();iterrator_of_list_entity++)
-	{
-		cout << (*iterrator_of_list_entity).get_place_fin_entity()<<(*iterrator_of_list_entity).get_name()<<" les signaux sont : " << endl;
-
-		lSignal = (*iterrator_of_list_entity).get_l_signal();
-
-		for (iterrator_of_lSiganl = lSignal.begin() ; iterrator_of_lSiganl != lSignal.end() ; iterrator_of_lSiganl++)
-		{
-			cout<<(*iterrator_of_lSiganl).get_name()<< " "<<(*iterrator_of_lSiganl).get_type()<<" "<<(*iterrator_of_lSiganl).get_IO()<<endl;
+		}
+		else if ((*iterrator_of_lMot).getLexeme() == ";") {
+			iterrator_of_lMot++;
+			if (((*iterrator_of_lMot).getLexeme() != "library")&&((*iterrator_of_lMot).getLexeme() != "entity")&&((*iterrator_of_lMot).getLexeme() != "architecture")) {
+				bFinSyntaxe = 1;
+			}
+			else {
+				bFinSyntaxe = 0;
+			}
+		}
+		else {
+		cout<<"Erreur debut programme"<<endl;
 		}
 	}
+	
+	if (fichier_Non_Vide == 0) {
+	
+		cout<<"le fichier est vide"<<endl;
+	}
+	
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+	//aficher_list_entity(list_entity);
 }

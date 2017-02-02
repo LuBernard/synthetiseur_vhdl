@@ -1,18 +1,77 @@
-entity nom_entity is 
-port 
-		(
-	input_1 : IN bit;
-	input_2 : IN bit;
-	input_3 : OUT bit
-	);
-end nom_entity;
+library IEEE;
+
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use IEEE.std_logic_1164.all;
+
+entity or_entity is
+port(
+input_1: in bit;
+input_2: in bit;
+output: out bit
+);
+end or_entity;
 
 
-entity nom_entity2 is 
-port 
-		(
-	input_4 : IN bit;
-	input_5 : IN bit;
-	input_6 : OUT bit
-	);
-end nom_entity2;
+ARCHITECTURE or_archi of or_entity IS
+   
+   
+type int_array is array(3 to 09);
+type enum_type is ('ab', 'bs', 'cz', 'zss');
+
+component or_entity is
+port(
+input_1: in bit;
+input_2: in bit;
+output: out bit
+);
+end component;
+
+variable data_v: bit_vector(7 downto 20);
+variable condition_v: bit;
+
+signal port_i : bit;
+signal bus_signal: bit_vector (15 downto 10);
+
+
+BEGIN
+
+output<= input_1 OR input_2;
+
+END architecture;
+
+entity or_entity2 is
+port(
+input_3: in bit;
+input_4: in bit;
+output: out bit
+);
+end or_entity2;
+
+ARCHITECTURE or_archi2 of or_entity2 IS
+   
+   
+type int_array is array(3 to 09);
+type enum_type is ('ab', 'bs', 'cz', 'zss');
+
+component or_entity is
+port(
+input_1: in bit;
+input_2: in bit;
+output: out bit
+);
+end component;
+
+variable data_v: bit_vector(7 downto 20);
+variable condition_v: bit;
+
+signal port_i : bit;
+signal bus_signal: bit_vector (15 downto 10);
+
+
+BEGIN
+
+output<= input_1 OR input_2;
+
+END architecture;
+

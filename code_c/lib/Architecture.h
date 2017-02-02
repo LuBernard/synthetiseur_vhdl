@@ -1,9 +1,8 @@
 #include <iostream>
 #include <string>
-#include <list> 
+#include <vector> 
+#include "Node.h"
 
-#include "Process.h"
-using namespace std;
 /////////////////////////////////////////////////////////////////////////////
 //
 // Architecture - classe de base pour une Architecture.
@@ -24,7 +23,7 @@ public:
 private:
     string name_architecture;
     string _name_entity;
-    list<Process> instructions;
+    //list<Process> instructions;
 };
 
 #endif

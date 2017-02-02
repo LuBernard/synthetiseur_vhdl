@@ -1,4 +1,4 @@
-#ifndef _EROOR_H_
+#ifndef _ERROR_H_
 #define _ERROR_H_
 
 #include "iostream"

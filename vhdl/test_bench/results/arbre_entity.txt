@@ -1,0 +1,8 @@
+name entity : or_entity
+input_1 bit in 
+input_2 bit in 
+output bit out 
+name entity : or_entity2
+input_3 bit in 
+input_4 bit in 
+output bit out 

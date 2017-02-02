@@ -2,7 +2,6 @@
 #include <string>
 #include <vector> 
 #include "Node.h"
-#include <list>
 
 using namespace std;
 
